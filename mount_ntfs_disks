@@ -1,0 +1,74 @@
+#!/bin/bash
+
+read -p "Name of your storage: " storage_name
+
+if [ -d /Volumes/$storage_name ]
+   then
+        sudo umount /Volumes/$storage_name
+        echo "/Volumes/$storage_name has been unmounted successfully!"
+elif [ ! -d /Volumes/$storage_name ]
+    then
+       read -p "Would you like to mount? (y/n):" yes_No
+
+       if [ "$yes_No" = "y" ] || [ "$yes_No" = "Y" ];
+       	  then
+	      read -p "
+
+      Please open a separate tab. On a mac, Press command_Key + T, if you are using Linux, please press Ctr + T.
+      
+      You will see a tab open next to this tab (you are reading this in this tab).
+      In the tab to your left or right, please type the command: diskutil list
+      
+
+      If you are running a Linux, please type the command:sudo fdisk -l
+
+      Or google the equivalent command for your operating system.
+
+      Below is a guide to help you make sense of what you will be looking at.
+
+      Check under #:This is sector number.
+      
+      example: /dev/disk5
+              
+        If you see a * next to a size, say *560GB, this means (Primary).
+	Primary means that your computer will look at it FIRST! skip this number.
+	
+	
+	  #(sector number):  TYPE(What kind of filesystem)    NAME(How you named your storage)  SIZE(How big it is, say 1 MB)  IDENTIFIER
+	  
+	  0: 			 GUID_partition_scheme  					          50GB                 /dev/disk5	
+	  1: 				EFI					.			  210MB                /dev/disk5s1
+	  2: 		      Microsoft Basic Data            MY_COOL_Storage(Look How you NAMED YOURS!)  1TB		       /dev/disk5s2
+	  3: 			       .					.			  60GB                 /dev/disk5s3
+	 
+
+	  Explanation:
+		
+	        The . Resembles some information.
+		If a name is blank like row # 0 -> That is not what you are looking for, move on.
+		Find your number and Read the entire line.
+		
+		The row 0, is the row that the operating system uses to understand how your data is stored and where.
+		What filesystem is used at each sector, the schematics.
+		
+
+		You can google the rest to see what each TYPE(kind of filesystem) means.
+		
+		To save you time, look under the NAME column.
+		
+		Find the name of your Storage and the number under # column, is the ROW that you are interested in.
+		
+		So, in this example, it will be number 2, and that is the third row.
+			
+		Your disk name: " disk_name
+
+               if [ ! -d /Volumes/$storage_name ]
+   		  then	
+       		       sudo mkdir /Volumes/$storage_name
+       		       sudo mount -t ntfs -o rw,auto,nobrowse $disk_name /Volumes/$storage_name
+       		       open /Volumes/$storage_name
+	       fi
+       else
+	    echo "Have a good day!"
+       fi
+ fi
